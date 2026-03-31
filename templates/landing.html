@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Crime Prediction and Analysis</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            background:
+                linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+                url("https://cdn.24.co.za/files/Cms/General/d/12818/9068417ba3d8490f9bd1079c6e656bf0.jpg");
+            background-size: cover;
+            background-position: center;
+            color: white;
+        }
+
+        /* -------- NAVBAR -------- */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: rgba(0,0,0,0.4);
+        }
+
+        .navbar h1 {
+            margin: 0;
+            font-size: 26px;
+            color: #f1c27d;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: bold;
+        }
+
+        .nav-links a:hover {
+            color: #f1c27d;
+        }
+
+        /* -------- HERO SECTION -------- */
+        .hero {
+            height: calc(100vh - 80px);
+            display: flex;
+            align-items: center;
+            padding-left: 60px;
+        }
+
+        .hero-text h2 {
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+
+        .hero-text span {
+            color: #f1c27d;
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <div class="logo"><h1>Crime Prediction</h1></div>
+    <div style="display:flex; gap:15px;">
+        <a href="{{ url_for('register') }}"
+           style="
+               padding:10px 25px;
+               background:#0d6efd;
+               color:white;
+               text-decoration:none;
+               border-radius:8px;
+               font-weight:bold;
+           ">
+            Register
+        </a>
+
+        <a href="{{ url_for('login') }}"
+           style="
+               padding:10px 25px;
+               background:#0d6efd;
+               color:white;
+               text-decoration:none;
+               border-radius:8px;
+               font-weight:bold;
+           ">
+            Login
+        </a>
+    </div>
+</div>
+    
+<!-- HERO CONTENT -->
+<div class="hero">
+    <div class="hero-text">
+        <h2>
+            Crime Rate Prediction<br>
+            <span>Using Machine Learning</span>
+        </h2>
+    </div>
+</div>
+
+</body>
+</html>

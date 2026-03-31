@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Crime Rate Analytics Dashboard</title>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background:
+            linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+                url("https://concealednation.org/wp-content/uploads/2024/04/Stock-Police-Screenshot_20240414_223848_Discord.jpg");
+                background-size: cover;
+            background-position: center;
+            color: rgb(227, 222, 222);
+        }
+
+        h2 { margin-bottom: 15px; }
+
+        .upload-bar {
+            display: flex;
+            gap: 15px;
+            background: linear-gradient(135deg, #374151, #4b5563);
+            padding: 15px;
+            border-radius: 10px;
+            align-items: center;
+            color: white;
+        }
+
+        .upload-bar button {
+            margin-left: auto;
+            background: #2563eb;
+            border: none;
+            padding: 8px 22px;
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .filters {
+            margin-top: 12px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .kpis {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .kpi {
+            background: linear-gradient(135deg, #ffffff, #eef2ff);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: bold;
+            color: #1e3a8a;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+        }
+
+        .charts {
+            margin-top: 30px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+        }
+
+        .chart-box {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            height: 360px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+        }
+
+        .chart-title {
+            text-align: center;
+            font-size: 15px;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #1f2937;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 260px !important;
+        }
+    </style>
+</head>
+
+<body>
+
+<div style="
+    display:flex;
+    align-items:left;
+    justify-content:flex-start;
+    gap:20px;
+">
+
+    <h1 style="margin:0;">
+        Crime Rate Analysis and Prediction
+    </h1>
+
+    <a href="/predict"
+       style="
+           background:#0d6efd;
+           color:white;
+           padding:10px 28px;
+           border-radius:10px;
+           text-decoration:none;
+           font-weight:bold;
+           white-space:nowrap;
+       ">
+        Predict
+    </a>
+ <a href="/logout"
+       style="
+           background:#0d6efd;
+           color:white;
+           padding:10px 28px;
+           border-radius:10px;
+           text-decoration:none;
+           font-weight:bold;
+           white-space:nowrap;
+       ">
+        Logout
+    </a>
+    <a href="/download" class="download-link"
+    style="
+           background:#0d6efd;
+           color:white;
+           padding:10px 28px;
+           border-radius:10px;
+           text-decoration:none;
+           font-weight:bold;
+           white-space:nowrap;
+       ">
+    ⬇ Download Report
+</a>
+
+</div>
+
+<form method="POST" enctype="multipart/form-data">
+
+    <div class="upload-bar">
+        <span>Upload CSV file:</span>
+        <input type="file" name="dataset">
+        <button type="submit">Upload</button>
+    </div>
+
+    {% if uploaded %}
+    <div class="filters">
+
+        <select name="city">
+            <option value="All">All Cities</option>
+            {% for c in cities %}
+                <option value="{{ c }}" {% if c == selected_city %}selected{% endif %}>
+                    {{ c }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <select name="year">
+            <option value="All">All Years</option>
+            {% for y in years %}
+                <option value="{{ y }}" {% if y == selected_year %}selected{% endif %}>
+                    {{ y }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <label style="display:flex; align-items:center; gap:6px;">
+            <input type="checkbox" id="toggleCities">
+            Show All Cities (Chart Only)
+        </label>
+
+        <button type="submit">Apply Filters</button>
+    </div>
+    {% endif %}
+</form>
+
+<!-- KPIs -->
+<div class="kpis">
+    <div class="kpi">Total Crimes<br>{{ kpis.total }}</div>
+    <div class="kpi">Male<br>{{ kpis.male }}</div>
+    <div class="kpi">Female<br>{{ kpis.female }}</div>
+    <div class="kpi">Other<br>{{ kpis.other }}</div>
+</div>
+
+<!-- Flask Data -->
+<script id="chart-data" type="application/json">
+{{ charts | tojson }}
+</script>
+<script>
+    const SELECTED_CITY = "{{ selected_city }}";
+</script>
+
+<!-- Charts + Map -->
+<div class="charts">
+
+    <div class="chart-box">
+        <div class="chart-title">Crime Hotspot Map</div>
+        <div id="map" style="height:280px;"></div>
+    </div>
+
+    <div class="chart-box">
+        <div class="chart-title">City-wise Crime Rate</div>
+        <canvas id="cityChart"></canvas>
+    </div>
+
+    <div class="chart-box">
+        <div class="chart-title">Victim Gender Distribution</div>
+        <canvas id="genderChart"></canvas>
+    </div>
+
+    <div class="chart-box">
+        <div class="chart-title">Crime Description Distribution</div>
+        <canvas id="crimeChart"></canvas>
+    </div>
+
+    <div class="chart-box">
+        <div class="chart-title">Year-wise Crime Count</div>
+        <canvas id="yearChart"></canvas>
+    </div>
+
+    <div class="chart-box">
+        <div class="chart-title">Month-wise Crime Trend</div>
+        <canvas id="monthChart"></canvas>
+    </div>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const d = JSON.parse(document.getElementById("chart-data").textContent);
+    console.log("Years:", d.year_labels, d.year_values);
+    console.log("Months:", d.month_labels, d.month_values);
+    const mapData = d.map_data;
+
+    // Default map view (India)
+    const map = L.map("map").setView([22.5937, 78.9629], 5);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "© OpenStreetMap"
+    }).addTo(map);
+
+    let focused = false;
+
+    mapData.forEach(item => {
+
+        // 🔴 SMALL DOT SIZE (FIXED)
+        const marker = L.circleMarker([item.lat, item.lon], {
+            radius: 6,                     // 👈 SMALL DOT
+            color: "#dc2626",
+            fillColor: "#ef4444",
+            fillOpacity: 0.7
+        }).addTo(map)
+          .bindPopup(`<b>${item.city}</b><br>Crimes: ${item.count}`);
+
+        // 🔥 AUTO ZOOM WHEN CITY SELECTED
+        if (SELECTED_CITY !== "All" && item.city === SELECTED_CITY) {
+            map.setView([item.lat, item.lon], 10);   // 👈 ZOOM LEVEL
+            marker.openPopup();
+            focused = true;
+        }
+    });
+
+    // If no city selected → fit all markers
+    if (!focused && mapData.length > 0) {
+        const bounds = mapData.map(d => [d.lat, d.lon]);
+        map.fitBounds(bounds, { padding: [30, 30] });
+    }
+
+    /* ---------------- CHARTS ---------------- */
+    const cityCanvas = document.getElementById("cityChart");
+let cityChart;
+
+function drawCity(labels, values) {
+    if (!cityCanvas) return;
+
+    if (cityChart) cityChart.destroy();
+
+    cityChart = new Chart(cityCanvas, {
+        type: "bar",
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "Crime Count",
+                data: values,
+                backgroundColor: "#93c5fd",
+                barPercentage: 0.6,        // bar width
+            categoryPercentage: 0.7   
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: {
+                    ticks: {
+                        maxRotation: 45,
+                        minRotation: 30,
+                        font: { size: 10 }
+                    }
+                },
+                y: { beginAtZero: true }
+            }
+        }
+    });
+}
+
+/* 🔥 INITIAL DRAW */
+if (SELECTED_CITY === "All") {
+    drawCity(d.all_city_labels, d.all_city_values);
+} else {
+    drawCity(d.city_labels, d.city_values);
+}
+
+/* 🔄 CHECKBOX TOGGLE */
+const toggle = document.getElementById("toggleCities");
+if (toggle) {
+    toggle.addEventListener("change", function () {
+        if (this.checked) {
+            drawCity(d.all_city_labels, d.all_city_values);
+        } else {
+            drawCity(d.city_labels, d.city_values);
+        }
+    });
+}
+
+    new Chart(genderChart, {
+        type: "pie",
+        data: { labels: d.gender_labels, datasets: [{ data: d.gender_values }] }
+    });
+
+    new Chart(crimeChart, {
+        type: "doughnut",
+        data: {
+            labels: d.crime_labels.slice(0,6),
+            datasets: [{ data: d.crime_values.slice(0,6) }]
+        }
+    });
+
+    /* ---------------- YEAR CHART ---------------- */
+    if (d.year_labels && d.year_labels.length > 0) {
+        new Chart(document.getElementById("yearChart"), {
+            type: "bar",
+            data: {
+                labels: d.year_labels,
+                datasets: [{
+                    label: "Year-wise Crime Count",
+                    data: d.year_values,
+                    backgroundColor: "#60a5fa",
+                    barThickness: 30
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    }
+
+    /* ---------------- MONTH CHART ---------------- */
+    if (d.month_labels && d.month_labels.length > 0) {
+        new Chart(document.getElementById("monthChart"), {
+            type: "line",
+            data: {
+                labels: d.month_labels,
+                datasets: [{
+                    label: "Month-wise Crime Trend",
+                    data: d.month_values,
+                    borderColor: "#22c55e",
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    }
+
+});
+</script>
+
+</body>
+</html>

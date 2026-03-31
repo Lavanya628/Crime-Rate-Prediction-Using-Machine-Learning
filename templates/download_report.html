@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Download Report</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #f3e5f5, #ede7f6);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+        }
+
+        .card {
+            background: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            width: 380px;
+        }
+
+        h2 {
+            color: #6a1b9a;
+            margin-bottom: 15px;
+        }
+
+        p {
+            color: #555;
+            margin-bottom: 25px;
+        }
+
+        .download-btn {
+            background: #6a1b9a;
+            color: #fff;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .download-btn:hover {
+            background: #4a148c;
+        }
+        .action-btn {
+    background: linear-gradient(90deg, #1a73e8, #0b5ed7);
+    color: #fff;
+    padding: 8px 22px;
+    border-radius: 20px;
+    border: none;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 4px 10px rgba(26, 115, 232, 0.35);
+    transition: all 0.25s ease;
+}
+
+.action-btn:hover {
+    background: linear-gradient(90deg, #0b5ed7, #084298);
+    transform: translateY(-1px);
+}
+
+.action-btn i {
+    font-style: normal;
+}
+
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Download Dashboard Report</h2>
+    <p>Click below to download the full crime dashboard report.</p>
+
+   <form action="/download_report" method="post" style="display:inline;">
+    <button type="submit" class="action-btn">
+            ⬇ Download Dashboard Report
+        </button>
+    </form>
+        <form action="/download_report" method="post" style="display:inline;">
+    <button type="submit" class="action-btn">⬇ Download PDF Report</button>
+</form>
+
+<br>
+
+<form action="/download_excel" method="post" style="display:inline;">
+    <button type="submit" class="action-btn">⬇ Download Excel Report</button>
+</form>
+</div>
+
+</body>
+</html>

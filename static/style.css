@@ -1,0 +1,224 @@
+/* ================= GLOBAL ================= */
+body {
+    margin: 0;
+    padding-top: 70px;              /* space for navbar */
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to right, #1e3c72, #f5f7fb);
+}
+
+/* ================= NAVBAR ================= */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 70px;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 40px;
+}
+
+
+.logo {
+    font-size: 22px;
+    font-weight: bold;
+    color: white;
+}
+
+/* Navbar buttons container */
+.nav-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+/* Navbar buttons (protected from link styles) */
+.nav-btn,
+.nav-btn:visited {
+    padding: 10px 24px;
+    background-color: #0d6efd;
+    color: white !important;
+    text-decoration: none !important;
+    border-radius: 10px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.nav-btn:hover {
+    background-color: #084298;
+    transform: translateY(-2px);
+}
+
+/* ================= LOGIN CARD ================= */
+.card {
+    width: 360px;
+    margin: 100px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+h2 {
+    text-align: center;
+}
+
+/* ================= INPUTS ================= */
+input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+/* ================= FORM BUTTON ================= */
+button {
+    width: 100%;
+    background: #0d6efd;
+    color: white;
+    border: none;
+    padding: 10px;
+    margin-top: 15px;
+    cursor: pointer;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+button:hover {
+    background: #084298;
+}
+
+/* ================= NORMAL LINKS (NOT NAVBAR) ================= */
+a:not(.nav-btn) {
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+    color: #0d6efd;
+    text-decoration: none;
+}
+
+a:not(.nav-btn):hover {
+    text-decoration: underline;
+}
+
+/* ================= FLASH MESSAGES ================= */
+.flash {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+.success { background: #d4edda; }
+.danger  { background: #f8d7da; }
+.info    { background: #d1ecf1; }
+
+/* ================= DASHBOARD ================= */
+
+.dashboard-container {
+    padding: 30px;
+}
+
+/* KPI section */
+.kpis {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.kpi {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+/* Charts grid */
+.charts {
+    margin-top: 30px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);   /* 🔹 small charts */
+    gap: 20px;
+}
+
+/* Each chart box */
+.chart-box {
+    background: white;
+    padding: 10px;
+    border-radius: 10px;
+    height: 260px;                          /* 🔹 controls size */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+/* Chart canvas */
+.chart-box {
+    height: 280px;
+}
+
+canvas {
+    max-height: 240px;
+}
+
+.chart-title {
+    text-align: center;
+    font-size: 15px;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #333;
+}
+
+.chart-box {
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    height: 340px;              /* enough space */
+}
+
+.chart-box canvas {
+    width: 100% !important;
+    height: 260px !important;  /* readable size */
+}
+/* ===== DASHBOARD THEME COLORS ===== */
+
+body {
+    background: #f4f7fb;
+}
+
+/* KPI Cards */
+.kpi {
+    background: linear-gradient(135deg, #ffffff, #f0f4ff);
+    color: #1e3a8a;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+}
+
+/* Chart containers */
+.chart-box {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+}
+
+/* Chart titles */
+.chart-title {
+    color: #1f2937;
+}
+
+/* Upload bar */
+.upload-bar {
+    background: linear-gradient(135deg, #374151, #4b5563);
+}
+
+/* Buttons */
+.upload-bar button,
+.filters button {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+}
+
+.upload-bar button:hover,
+.filters button:hover {
+    background: linear-gradient(135deg, #1e40af, #1e3a8a);
+}
+
+

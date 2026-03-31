@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Crime Rate Prediction</title>
+    <style>
+        body {
+            font-family: Arial;
+            background:
+            linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+            url("https://concealednation.org/wp-content/uploads/2024/04/Stock-Police-Screenshot_20240414_223848_Discord.jpg");
+            background-size: cover;
+            background-position: center;
+        }
+        .container {
+            width: 420px;
+            margin: 70px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+        }
+        select, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 12px;
+        }
+        button {
+            background: #0d6efd;
+            color: white;
+            border: none;
+        }
+        .result {
+            margin-top: 20px;
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2 align="center">Crime Rate Prediction</h2>
+
+    <form method="post">
+        <select id="city" name="city" required>
+            <option value="">Select City</option>
+            {% for c in cities %}
+            <option value="{{ c }}">{{ c|title }}</option>
+            {% endfor %}
+        </select>
+
+        <select id="crime_code" name="crime_code" required>
+            <option value="">Select Crime Code</option>
+        </select>
+
+        <select id="age" name="age" required>
+            <option value="">Select Victim Age</option>
+        </select>
+
+        <button type="submit">Predict</button>
+    </form>
+
+    {% if gender %}
+    <div class="result">
+        <h3>Prediction Result</h3>
+        <p><b>Victim Gender:</b> {{ gender }}</p>
+        <p><b>Weapon Used:</b> {{ weapon }}</p>
+        <p><b>Crime Description:</b> {{ description }}</p>
+    </div>
+    {% endif %}
+</div>
+<div style="text-align:center; margin-bottom:20px;"> 
+    <a href="{{ url_for('dashboard') }}" 
+    style=" padding:8px 15px; background:#0d6efd; color:white; text-decoration:none; border-radius:5px; font-weight:bold; "> 
+    Dashboard </a> </div>
+<script>
+document.getElementById("city").addEventListener("change", function () {
+    fetch(`/get_crime_codes/${this.value}`)
+        .then(res => res.json())
+        .then(data => {
+            let cc = document.getElementById("crime_code");
+            cc.innerHTML = "<option>Select Crime Code</option>";
+            data.forEach(c => cc.innerHTML += `<option>${c}</option>`);
+            document.getElementById("age").innerHTML =
+                "<option>Select Victim Age</option>";
+        });
+});
+
+document.getElementById("crime_code").addEventListener("change", function () {
+    let city = document.getElementById("city").value;
+    fetch(`/get_ages/${city}/${this.value}`)
+        .then(res => res.json())
+        .then(data => {
+            let age = document.getElementById("age");
+            age.innerHTML = "<option>Select Victim Age</option>";
+            data.forEach(a => age.innerHTML += `<option>${a}</option>`);
+        });
+});
+</script>
+
+</body>
+</html>
